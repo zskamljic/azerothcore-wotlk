@@ -386,6 +386,12 @@ struct Loot
     [[nodiscard]] bool hasOverThresholdItem() const;
     void FillNotNormalLootFor(Player* player);
 
+    // Appends a copy of item as a free-for-all item lootable by player (e.g. when merging loot from several sources).
+    // Fails when the loot is full, the player is not allowed to see the item or someone else is looting.
+    LootItem* AddFreeForAllItemFor(LootItem const& item, Player* player);
+    // Marks a free-for-all item as looted by player without storing it, returns false if it was not available to them
+    bool RemoveFreeForAllItemFor(uint8 lootIndex, Player* player);
+
 private:
     QuestItemList* FillFFALoot(Player* player);
     QuestItemList* FillQuestLoot(Player* player);

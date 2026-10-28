@@ -633,6 +633,65 @@ void Loot::FillNotNormalLootFor(Player* player)
     }
 }
 
+LootItem* Loot::AddFreeForAllItemFor(LootItem const& item, Player* player)
+{
+    if (items.size() >= MAX_NR_LOOT_ITEMS)
+        return nullptr;
+
+    // quest item slots follow the regular items, adding one would shift them for anyone with the loot window open
+    for (ObjectGuid const& looter : PlayersLooting)
+        if (looter != player->GetGUID())
+            return nullptr;
+
+    if (!item.AllowedForPlayer(player, sourceWorldObjectGUID))
+        return nullptr;
+
+    LootItem& added = items.emplace_back(item);
+    added.itemIndex = items.size() - 1;
+    added.freeforall = true;
+    added.is_looted = false;
+    added.is_blocked = false;
+    added.is_counted = false;
+    added.rollWinnerGUID.Clear();
+
+    // without a list yet, FillFFALoot picks up the new item along with any others the player has not been given
+    QuestItemMap::iterator itr = PlayerFFAItems.find(player->GetGUID());
+    if (itr == PlayerFFAItems.end())
+        FillFFALoot(player);
+    else
+    {
+        itr->second->push_back(QuestItem(added.itemIndex));
+        ++unlootedCount;
+    }
+
+    return &added;
+}
+
+bool Loot::RemoveFreeForAllItemFor(uint8 lootIndex, Player* player)
+{
+    if (lootIndex >= items.size() || !items[lootIndex].freeforall)
+        return false;
+
+    QuestItemMap::iterator itr = PlayerFFAItems.find(player->GetGUID());
+    if (itr == PlayerFFAItems.end())
+        return false;
+
+    for (QuestItem& ffaItem : *itr->second)
+    {
+        if (ffaItem.index != lootIndex)
+            continue;
+
+        if (ffaItem.is_looted)
+            return false;
+
+        ffaItem.is_looted = true;
+        --unlootedCount;
+        return true;
+    }
+
+    return false;
+}
+
 QuestItemList* Loot::FillFFALoot(Player* player)
 {
     QuestItemList* ql = new QuestItemList();
