@@ -465,6 +465,9 @@ bool LootItem::AllowedForPlayer(Player const* player, ObjectGuid source) const
     if (!sScriptMgr->OnAllowedForPlayerLootCheck(player, source))
         return false;
 
+    if (!sScriptMgr->CanPlayerSeeLootItem(player, *this, source))
+        return false;
+
     return true;
 }
 

@@ -109,6 +109,11 @@ bool ScriptMgr::OnAllowedForPlayerLootCheck(Player const* player, ObjectGuid sou
     CALL_ENABLED_BOOLEAN_HOOKS(GlobalScript, GLOBALHOOK_ON_ALLOWED_FOR_PLAYER_LOOT_CHECK, script->OnAllowedForPlayerLootCheck(player, source));
 }
 
+bool ScriptMgr::CanPlayerSeeLootItem(Player const* player, LootItem const& item, ObjectGuid source)
+{
+    CALL_ENABLED_BOOLEAN_HOOKS(GlobalScript, GLOBALHOOK_CAN_PLAYER_SEE_LOOT_ITEM, !script->CanPlayerSeeLootItem(player, item, source));
+}
+
 bool ScriptMgr::OnAllowedToLootContainerCheck(Player const* player, ObjectGuid source)
 {
     CALL_ENABLED_BOOLEAN_HOOKS(GlobalScript, GLOBALHOOK_ON_ALLOWED_TO_LOOT_CONTAINER_CHECK, script->OnAllowedToLootContainerCheck(player, source));

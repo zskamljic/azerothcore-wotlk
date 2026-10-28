@@ -49,6 +49,7 @@ enum GlobalHook
     GLOBALHOOK_ON_BEFORE_SET_BOSS_STATE,
     GLOBALHOOK_AFTER_INSTANCE_GAME_OBJECT_CREATE,
     GLOBALHOOK_CAN_CREATE_LFG_PROPOSAL,
+    GLOBALHOOK_CAN_PLAYER_SEE_LOOT_ITEM,
     GLOBALHOOK_END
 };
 
@@ -96,6 +97,9 @@ public:
 
     // Called when checking if a player can see the creature loot item
     virtual bool OnAllowedForPlayerLootCheck(Player const* /*player*/, ObjectGuid /*source*/) { return false; };
+
+    // Called when checking if a player can see a specific loot item, return false to hide it from the player
+    virtual bool CanPlayerSeeLootItem(Player const* /*player*/, LootItem const& /*item*/, ObjectGuid /*source*/) { return true; }
 
     // Called when checking if a player can see the creature loot (if it can click the corpse f.e)
     virtual bool OnAllowedToLootContainerCheck(Player const* /*player*/, ObjectGuid /*source*/) { return false; };
